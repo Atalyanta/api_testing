@@ -1,19 +1,22 @@
 from api.questions_api import api
 from http import HTTPStatus
 from utils.assertions import Assert
+import re
 
 
 def test_list_users():
     res = api.list_users()
-
     assert res.status_code == HTTPStatus.OK
-#    Assert.validate_schema(res.json())
+#   Assert.validate_schema(res.json())
+    assert res.headers['Cache-Control'] == 'max-age=14400'      #  проверка заголовка
+
 
 def test_single_user_not_found():
     res = api.single_user_not_found()
 
     assert res.status_code == HTTPStatus.NOT_FOUND
   #  Assert.validate_schema(res.json())
+
 
 def test_single_user():
     res = api.single_user()
@@ -36,9 +39,24 @@ def test_single_user():
             "text": "To keep ReqRes free, contributions towards server costs are appreciated!"
         }
     }
+
     assert example == res_body
 
-def test_create():
+    assert re.fullmatch(r'\w+', res_body['data']['last_name'])  # проверка на то, что несколько букв
+                    # r - рег.выражение, \w+ - буквы, несколько
+    assert re.fullmatch(r'\w[a-z]{5}', res_body['data']['last_name'])   # от а до z и 6 букв
+    assert re.fullmatch(r'\w[a-z]+', res_body['data']['last_name'])     # буквы от а до z, 1 и более
+    assert re.fullmatch(r'.+', res_body['data']['last_name'])   # любые символы
+
+
+def test_created():
+    res = api.create()
+
+    assert res.status_code == HTTPStatus.CREATED
+ #   Assert.validate_schema(res.json())
+
+
+def test_create():      # внеси данные в базу
     name = 'Boris'
     job = 'Tester'
     res = api.create(name, job)
@@ -46,11 +64,9 @@ def test_create():
     assert res.status_code == HTTPStatus.CREATED
     assert res.json()['name'] == name
     assert res.json()['job'] == job
-    
+
+    assert re.fullmatch(r'\d{1,4}', res.json()['id'])   # проверка, что id соотв.паттерну: числа от 1 до4
+
     assert api.delete_user(res.json()['id']).status_code == HTTPStatus.NO_CONTENT
+                # после проверки удаляем то, что внесли
 
-def test_created():
-    res = api.create()
-
-    assert res.status_code == HTTPStatus.CREATED
- #   Assert.validate_schema(res.json())

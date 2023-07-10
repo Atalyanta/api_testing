@@ -1,4 +1,4 @@
-from api.register_api import api
+from api.questions_api import api
 from http import HTTPStatus
 
 
