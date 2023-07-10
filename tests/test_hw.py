@@ -12,11 +12,3 @@ def test_create_hw():
     assert res.json()['email'] == email
     assert res.json()['password'] == password
 
-
-def test_created_hw():
-    res = api.create_hw()
-
-    assert res.status_code == HTTPStatus.CREATED
-   # Assert.validate_schema(res.json())
-
-

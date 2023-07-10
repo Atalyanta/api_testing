@@ -2,7 +2,7 @@ from api.client import Client
 import json
 
 
-class ApiR(Client):
+class ApiReg(Client):
     USERS = '/users'
     BASE_URL = 'https://reqres.in/api/register'
 
@@ -14,7 +14,7 @@ class ApiR(Client):
         :body:      {
                         "email": "",
                         "password": ""
-                    }
+                     }
         """
 
         url = self.BASE_URL + self.USERS
@@ -28,6 +28,4 @@ class ApiR(Client):
         return self.post(url, headers, payload)
 
 
-
-
-api = ApiR()
+api = ApiReg()
